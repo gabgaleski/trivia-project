@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import urlToken from '../services/Apiresult';
+import { addEmail } from '../redux/actions';
 
 class Login extends Component {
   state = {
-    Email: '',
-    Name: '',
+    email: '',
+    name: '',
   };
 
   handeChange = ({ target }) => {
@@ -14,29 +17,38 @@ class Login extends Component {
     });
   };
 
+  clickButton = async () => {
+    const returnToken = await urlToken();
+    localStorage.setItem('token', returnToken);
+    const { history, dispatch } = this.props;
+    dispatch(addEmail(this.state));
+    history.push('/game');
+  };
+
   render() {
-    const { Email, Name } = this.state;
-    const verifyButton = Email.length > 0 && Name.length > 0;
+    const { email, name } = this.state;
+    const verifyButton = email.length > 0 && name.length > 0;
     return (
       <form>
         <input
           onChange={ this.handeChange }
-          name="Email"
-          value={ Email }
+          name="email"
+          value={ email }
           data-testid="input-gravatar-email"
           type="email"
           placeholder="Email:"
         />
         <input
           onChange={ this.handeChange }
-          name="Name"
-          value={ Name }
+          name="name"
+          value={ name }
           data-testid="input-player-name"
           type="text"
           placeholder="Nome:"
         />
         <button
           disabled={ !verifyButton }
+          onClick={ this.clickButton }
           data-testid="btn-play"
           type="button"
         >
@@ -46,5 +58,12 @@ class Login extends Component {
     );
   }
 }
+
+Login.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default connect()(Login);
