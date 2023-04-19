@@ -1,6 +1,6 @@
-export const ADD_EMAIL = 'ADD_EMAIL';
+export const ADD_LOGIN = 'ADD_LOGIN';
 
-export const addEmail = (email) => ({
-  type: ADD_EMAIL,
-  email,
+export const addEmail = (payload) => ({
+  type: ADD_LOGIN,
+  payload,
 });
