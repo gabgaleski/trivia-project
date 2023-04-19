@@ -25,6 +25,11 @@ class Login extends Component {
     history.push('/game');
   };
 
+  clickSetting = () => {
+    const { history } = this.props;
+    history.push('/config');
+  };
+
   render() {
     const { email, name } = this.state;
     const verifyButton = email.length > 0 && name.length > 0;
@@ -53,6 +58,13 @@ class Login extends Component {
           type="button"
         >
           Play
+        </button>
+        <button
+          onClick={ this.clickSetting }
+          type="button"
+          data-testid="btn-settings"
+        >
+          Configurações
         </button>
       </form>
     );
