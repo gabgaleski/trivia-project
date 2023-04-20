@@ -37,14 +37,20 @@ class Game extends Component {
 
   filterFunction = () => {
     const { quests, count } = this.state;
+    const { history } = this.props;
     const filters = quests.filter((element, index) => index === count);
-    const filterArray = [filters[0]
-      .correct_answer, ...filters[0].incorrect_answers];
-    for (let i = filterArray.length - 1; i > 0; i -= i) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [filterArray[i], filterArray[j]] = [filterArray[j], filterArray[i]];
+    const MAX_NUMBER = 5;
+    if (count === MAX_NUMBER) {
+      history.push('/feedback');
+    } else {
+      const filterArray = [filters[0]
+        .correct_answer, ...filters[0].incorrect_answers];
+      for (let i = filterArray.length - 1; i > 0; i -= i) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [filterArray[i], filterArray[j]] = [filterArray[j], filterArray[i]];
+      }
+      this.setState({ answers: filterArray });
     }
-    this.setState({ answers: filterArray });
   };
 
   countClick = () => {
