@@ -11,6 +11,8 @@ class Game extends Component {
     count: 0,
     answers: [],
     cliqued: false,
+    btnenable: false,
+    countdown: 30,
   };
 
   async componentDidMount() {
@@ -18,6 +20,8 @@ class Game extends Component {
     if (questionApi.response_code === 0) {
       this.setState({ quests: questionApi.results }, () => {
         this.filterFunction();
+
+        this.countdownFunction();
       });
     } else {
       this.setState({ quests: [] }, () => {
@@ -27,6 +31,7 @@ class Game extends Component {
       });
     }
     console.log(questionApi);
+    this.enableButton();
   }
 
   filterFunction = () => {
@@ -49,74 +54,77 @@ class Game extends Component {
   };
 
   answerCLick = () => {
-    this.setState({ cliqued: true });
+    this.setState({ cliqued: true, btnenable: false }, () => { this.enableButton(); });
+  };
+
+  enableButton = () => {
+    const timer = 5000;
+    setTimeout(() => {
+      this.setState({ btnenable: true });
+    }, timer);
+  };
+
+  countdownFunction = () => {
+    const decressTimer = 1000;
+    const interval = setInterval(() => {
+      const { countdown } = this.state;
+      this.setState({ countdown: countdown - 1 });
+      if (countdown === 1) {
+        this.setState({ btnenable: false });
+        clearInterval(interval);
+      }
+    }, decressTimer);
   };
 
   render() {
-    const { quests, count, answers, cliqued } = this.state;
+    const { quests, count, answers, cliqued, btnenable, countdown } = this.state;
     // console.log(shuffle(answers));
     return (
       <div>
         <Header />
-        { quests.map((e, index) => {
+        { quests.map((e, index) => (
           // console.log(e);
-          if (index === count) {
-            return (
-              <div key={ e.question }>
-                <p data-testid="question-category">
-                  { e.category }
-                </p>
-                <p data-testid="question-text">
-                  {e.question}
-                </p>
-                {/* <div data-testid="answer-options">
-                  <button
-                    data-testid="correct-answer"
-                    onClick={ this.countClick }
-                  >
-                    { e.correct_answer }
-                  </button>
-                  {e.incorrect_answers.map((el, i) => (
-                    <button
-                      data-testid={ `wrong-answer-${i}` }
-                      key={ el }
-                      onClick={ this.countClick }
-                    >
-                      {el}
-                    </button>
-                  ))}
-                </div> */}
-                <div className="container-button" data-testid="answer-options">
-                  { answers.map((element, i) => {
-                    if (element === e.correct_answer) {
-                      return (
-                        <button
-                          className={ cliqued ? 'correct' : 'default' }
-                          key={ i }
-                          data-testid="correct-answer"
-                          onClick={ this.answerCLick }
-                        >
-                          { element }
-                        </button>
-                      );
-                    }
+          (index === count) && (
+            <div key={ e.question }>
+              <p data-testid="question-category">
+                { e.category }
+              </p>
+              <p data-testid="question-text">
+                {e.question}
+              </p>
+              <div className="container-button" data-testid="answer-options">
+                { answers.map((element, i) => {
+                  if (element === e.correct_answer) {
                     return (
                       <button
-                        className={ cliqued ? 'incorrect' : 'default' }
-                        key={ `wrong-answer-${i}` }
-                        data-testid={ `wrong-answer-${i}` }
+                        disabled={ !btnenable }
+                        className={ cliqued ? 'correct' : 'default' }
+                        key={ i }
+                        data-testid="correct-answer"
                         onClick={ this.answerCLick }
                       >
-                        {element}
+                        { element }
                       </button>
                     );
-                  })}
-                </div>
-                <p>{ count }</p>
+                  }
+                  return (
+                    <button
+                      disabled={ !btnenable }
+                      className={ cliqued ? 'incorrect' : 'default' }
+                      key={ `wrong-answer-${i}` }
+                      data-testid={ `wrong-answer-${i}` }
+                      onClick={ this.answerCLick }
+                    >
+                      {element}
+                    </button>
+                  );
+                })}
               </div>
-            );
-          } return console.log('oi');
-        }) }
+              <p>{ count }</p>
+            </div>
+          )
+        ))}
+        <p>{ countdown }</p>
         <button data-testid="btn-next" onClick={ this.countClick }>Next</button>
 
       </div>
