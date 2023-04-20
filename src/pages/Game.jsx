@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Header from '../component/Header';
 import Question from '../services/ApiQuestions';
 import '../GameCss.css';
-import { scoreDispatch } from '../redux/actions';
+import { correctDispatch, scoreDispatch } from '../redux/actions';
 
 class Game extends Component {
   state = {
@@ -94,6 +94,7 @@ class Game extends Component {
     const magic = 10;
     const soma = magic + (countdown * sum);
     dispatch(scoreDispatch(soma));
+    dispatch(correctDispatch(1));
   };
 
   enableButton = () => {
