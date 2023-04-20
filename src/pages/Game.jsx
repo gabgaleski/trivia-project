@@ -3,12 +3,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../component/Header';
 import Question from '../services/ApiQuestions';
+import '../GameCss.css';
 
 class Game extends Component {
   state = {
     quests: [],
     count: 0,
     answers: [],
+    cliqued: false,
   };
 
   async componentDidMount() {
@@ -30,7 +32,8 @@ class Game extends Component {
   filterFunction = () => {
     const { quests, count } = this.state;
     const filters = quests.filter((element, index) => index === count);
-    const filterArray = [filters[0].correct_answer, ...filters[0].incorrect_answers];
+    const filterArray = [filters[0]
+      .correct_answer, ...filters[0].incorrect_answers];
     for (let i = filterArray.length - 1; i > 0; i -= i) {
       const j = Math.floor(Math.random() * (i + 1));
       [filterArray[i], filterArray[j]] = [filterArray[j], filterArray[i]];
@@ -42,11 +45,15 @@ class Game extends Component {
   countClick = () => {
     const { count } = this.state;
     const sum = count + 1;
-    this.setState({ count: sum });
+    this.setState({ count: sum, cliqued: false }, () => { this.filterFunction(); });
+  };
+
+  answerCLick = () => {
+    this.setState({ cliqued: true });
   };
 
   render() {
-    const { quests, count, answers } = this.state;
+    const { quests, count, answers, cliqued } = this.state;
     // console.log(shuffle(answers));
     return (
       <div>
@@ -79,14 +86,15 @@ class Game extends Component {
                     </button>
                   ))}
                 </div> */}
-                <div data-testid="answer-options">
+                <div className="container-button" data-testid="answer-options">
                   { answers.map((element, i) => {
                     if (element === e.correct_answer) {
                       return (
                         <button
+                          className={ cliqued ? 'correct' : 'default' }
                           key={ i }
                           data-testid="correct-answer"
-                          onClick={ this.countClick }
+                          onClick={ this.answerCLick }
                         >
                           { element }
                         </button>
@@ -94,9 +102,10 @@ class Game extends Component {
                     }
                     return (
                       <button
+                        className={ cliqued ? 'incorrect' : 'default' }
                         key={ `wrong-answer-${i}` }
                         data-testid={ `wrong-answer-${i}` }
-                        onClick={ this.countClick }
+                        onClick={ this.answerCLick }
                       >
                         {element}
                       </button>
@@ -108,6 +117,7 @@ class Game extends Component {
             );
           } return console.log('oi');
         }) }
+        <button data-testid="btn-next" onClick={ this.countClick }>Next</button>
 
       </div>
     );
