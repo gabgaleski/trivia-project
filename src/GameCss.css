@@ -1,0 +1,15 @@
+.correct {
+  border-color: rgb(6, 240, 15);
+  border-style: solid;
+  border-width: 3px;
+}
+
+.incorrect {
+  border-color: red;
+  border-style: solid;
+  border-width: 3px;
+}
+
+.default {
+  border-width: 3px;
+}
