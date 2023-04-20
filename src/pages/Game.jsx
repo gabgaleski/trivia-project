@@ -14,6 +14,7 @@ class Game extends Component {
     cliqued: false,
     btnenable: false,
     countdown: 30,
+    btnnext: false,
   };
 
   async componentDidMount() {
@@ -49,18 +50,24 @@ class Game extends Component {
   countClick = () => {
     const { count } = this.state;
     const sum = count + 1;
-    this.setState({ count: sum, cliqued: false, countdown: 30 }, () => {
+    this.setState({ count: sum, cliqued: false, countdown: 30, btnnext: false }, () => {
       this.filterFunction();
     });
   };
 
   answerCLick = () => {
-    this.setState({ cliqued: true, btnenable: false }, () => { this.enableButton(); });
+    this.setState(
+      { cliqued: true, btnenable: false, btnnext: true },
+      () => { this.enableButton(); },
+    );
     // this.point();
   };
 
   rightAnswerCLick = (param) => {
-    this.setState({ cliqued: true, btnenable: false }, () => { this.enableButton(); });
+    this.setState(
+      { cliqued: true, btnenable: false, btnnext: true },
+      () => { this.enableButton(); },
+    );
     this.point(param);
   };
 
@@ -104,7 +111,7 @@ class Game extends Component {
   };
 
   render() {
-    const { quests, count, answers, cliqued, btnenable, countdown } = this.state;
+    const { quests, count, answers, cliqued, btnenable, countdown, btnnext } = this.state;
     const { score } = this.props;
     return (
       <div>
@@ -154,7 +161,16 @@ class Game extends Component {
         ))}
         <p>{ score }</p>
         <p>{ countdown }</p>
-        <button data-testid="btn-next" onClick={ this.countClick }>Next</button>
+        {
+          btnnext && (
+            <button
+              data-testid="btn-next"
+              onClick={ this.countClick }
+            >
+              Next
+            </button>
+          )
+        }
 
       </div>
     );
