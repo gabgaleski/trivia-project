@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Header from '../component/Header';
 import Question from '../services/ApiQuestions';
 import '../GameCss.css';
+import { scoreDispatch } from '../redux/actions';
 
 class Game extends Component {
   state = {
@@ -30,7 +31,6 @@ class Game extends Component {
         history.push('/');
       });
     }
-    console.log(questionApi);
     this.enableButton();
   }
 
@@ -44,17 +44,43 @@ class Game extends Component {
       [filterArray[i], filterArray[j]] = [filterArray[j], filterArray[i]];
     }
     this.setState({ answers: filterArray });
-    return console.log(filterArray);
   };
 
   countClick = () => {
     const { count } = this.state;
     const sum = count + 1;
-    this.setState({ count: sum, cliqued: false }, () => { this.filterFunction(); });
+    this.setState({ count: sum, cliqued: false, countdown: 30 }, () => {
+      this.filterFunction();
+    });
   };
 
   answerCLick = () => {
     this.setState({ cliqued: true, btnenable: false }, () => { this.enableButton(); });
+    // this.point();
+  };
+
+  rightAnswerCLick = (param) => {
+    this.setState({ cliqued: true, btnenable: false }, () => { this.enableButton(); });
+    this.point(param);
+  };
+
+  point = (element) => {
+    const { countdown } = this.state;
+    const { dispatch } = this.props;
+    let sum = 0;
+    if (element === 'easy') {
+      sum = 1;
+    }
+    if (element === 'medium') {
+      sum = 2;
+    }
+    if (element === 'hard') {
+      const magicnum = 3;
+      sum = magicnum;
+    }
+    const magic = 10;
+    const soma = magic + (countdown * sum);
+    dispatch(scoreDispatch(soma));
   };
 
   enableButton = () => {
@@ -67,27 +93,30 @@ class Game extends Component {
   countdownFunction = () => {
     const decressTimer = 1000;
     const interval = setInterval(() => {
-      const { countdown } = this.state;
-      this.setState({ countdown: countdown - 1 });
-      if (countdown === 1) {
-        this.setState({ btnenable: false });
-        clearInterval(interval);
-      }
+      this.setState((prevState) => ({ countdown: prevState.countdown - 1 }), () => {
+        const { countdown } = this.state;
+        if (countdown <= 0) {
+          this.setState({ btnenable: false });
+          clearInterval(interval);
+        }
+      });
     }, decressTimer);
   };
 
   render() {
     const { quests, count, answers, cliqued, btnenable, countdown } = this.state;
-    // console.log(shuffle(answers));
+    const { score } = this.props;
     return (
       <div>
         <Header />
         { quests.map((e, index) => (
-          // console.log(e);
           (index === count) && (
             <div key={ e.question }>
               <p data-testid="question-category">
                 { e.category }
+              </p>
+              <p>
+                { e.difficulty }
               </p>
               <p data-testid="question-text">
                 {e.question}
@@ -101,7 +130,7 @@ class Game extends Component {
                         className={ cliqued ? 'correct' : 'default' }
                         key={ i }
                         data-testid="correct-answer"
-                        onClick={ this.answerCLick }
+                        onClick={ () => { this.rightAnswerCLick(e.difficulty); } }
                       >
                         { element }
                       </button>
@@ -120,10 +149,10 @@ class Game extends Component {
                   );
                 })}
               </div>
-              <p>{ count }</p>
             </div>
           )
         ))}
+        <p>{ score }</p>
         <p>{ countdown }</p>
         <button data-testid="btn-next" onClick={ this.countClick }>Next</button>
 
@@ -133,9 +162,13 @@ class Game extends Component {
 }
 
 Game.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  score: PropTypes.number.isRequired,
 };
 
-export default connect()(Game);
+const mapStateToProps = (state) => ({ score: state.player.score });
+
+export default connect(mapStateToProps)(Game);
