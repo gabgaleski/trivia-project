@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import urlToken from '../services/Apiresult';
 import { addEmail } from '../redux/actions';
 
@@ -78,4 +79,4 @@ Login.propTypes = {
   }).isRequired,
 };
 
-export default connect()(Login);
+export default connect()(withRouter(Login));
