@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import urlToken from '../services/Apiresult';
-import { addEmail } from '../redux/actions';
+import { addEmail, correctDispatch, scoreDispatch } from '../redux/actions';
 
 class Login extends Component {
   state = {
@@ -23,6 +23,8 @@ class Login extends Component {
     localStorage.setItem('token', returnToken);
     const { history, dispatch } = this.props;
     dispatch(addEmail(this.state));
+    dispatch(scoreDispatch(0));
+    dispatch(correctDispatch(0));
     history.push('/game');
   };
 

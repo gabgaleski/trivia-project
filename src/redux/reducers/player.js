@@ -1,8 +1,9 @@
-import { ADD_SCORE, CORRECT_ANSWERS } from '../actions';
+import { ADD_SCORE, CORRECT_ANSWERS, RANKING_SAVE } from '../actions';
 
 const INITIAL_STATE = {
   score: 0,
   assertions: 0,
+  rank: [],
 };
 
 export const player = (state = INITIAL_STATE, { type, payload }) => {
@@ -10,12 +11,17 @@ export const player = (state = INITIAL_STATE, { type, payload }) => {
   case ADD_SCORE:
     return {
       ...state,
-      score: state.score + payload,
+      score: payload === 0 ? 0 : state.score + payload,
     };
   case CORRECT_ANSWERS:
     return {
       ...state,
-      assertions: state.assertions + payload,
+      assertions: payload === 0 ? 0 : state.assertions + payload,
+    };
+  case RANKING_SAVE:
+    return {
+      ...state,
+      rank: [...state.rank, payload],
     };
   default:
     return state;
