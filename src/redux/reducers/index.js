@@ -4,7 +4,6 @@ import { ADD_LOGIN } from '../actions';
 
 const INITIAL_STATE = {
   login: { name: '', email: '' },
-  player: { score: 0 },
 };
 
 const reducer = (state = INITIAL_STATE, { type, payload }) => {
